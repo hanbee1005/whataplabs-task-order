@@ -1,0 +1,6 @@
+### id로 주문 조회
+GET http://localhost:9089/orders/101
+
+### 주문 목록 조회
+GET http://localhost:9089/orders
+

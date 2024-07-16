@@ -10,6 +10,6 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
     @Query("SELECT o FROM OrderEntity o JOIN FETCH o.orderProducts WHERE o.id = :orderId")
     Optional<OrderEntity> findByIdWithOrderProducts(Long orderId);
 
-    @Query("SELECT o FROM OrderEntity o JOIN FETCH o.orderProducts")
+    @Query("SELECT DISTINCT o FROM OrderEntity o JOIN FETCH o.orderProducts")
     List<OrderEntity> findAllWithOrderProducts();
 }
