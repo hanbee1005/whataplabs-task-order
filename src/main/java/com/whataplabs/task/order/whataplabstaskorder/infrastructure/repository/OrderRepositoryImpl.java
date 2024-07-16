@@ -17,11 +17,11 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public Optional<Order> getOrder(Long orderId) {
-        return Optional.empty();
+        return jpaRepository.findByIdWithOrderProducts(orderId).map(OrderEntity::toDomain);
     }
 
     @Override
     public List<Order> getOrders() {
-        return null;
+        return jpaRepository.findAllWithOrderProducts().stream().map(OrderEntity::toDomain).toList();
     }
 }

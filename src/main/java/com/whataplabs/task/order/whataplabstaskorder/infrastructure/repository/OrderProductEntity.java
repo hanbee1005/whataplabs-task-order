@@ -1,5 +1,7 @@
 package com.whataplabs.task.order.whataplabstaskorder.infrastructure.repository;
 
+import com.whataplabs.task.order.whataplabstaskorder.domain.OrderProduct;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,4 +24,16 @@ public class OrderProductEntity {
     private BigDecimal unitPrice;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
+
+    public OrderProduct toDomain() {
+        return OrderProduct.builder()
+                .orderProductId(id)
+                .orderId(order.getId())
+                .productId(productId)
+                .quantity(quantity)
+                .unitPrice(unitPrice)
+                .createdAt(createdAt)
+                .lastModifiedAt(lastModifiedAt)
+                .build();
+    }
 }
