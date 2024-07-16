@@ -9,11 +9,12 @@ import java.util.List;
 public record GetOrderResponse(
         Long orderId,
         OrderStatus status,
+        String statusDesc,
         BigDecimal totalPrice,
         List<GetOrderProductResponse> orderProducts
 ) {
     public static GetOrderResponse from(Order order) {
-        return new GetOrderResponse(order.getId(), order.getStatus(), order.getTotalPrice(),
+        return new GetOrderResponse(order.getId(), order.getStatus(), order.getStatus().getDesc(), order.getTotalPrice(),
                 order.getOrderProducts().stream().map(GetOrderProductResponse::from).toList());
     }
 }
