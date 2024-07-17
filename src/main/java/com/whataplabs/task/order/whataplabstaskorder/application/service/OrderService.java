@@ -26,4 +26,27 @@ public class OrderService {
     public List<Order> getOrders() {
         return repository.getOrders();
     }
+
+    @Transactional
+    public Order orderProducts(Order newOrder) {
+        Order order = repository.orderProducts(newOrder);
+        // TODO 이벤트 발행 - 주문 요청 이벤트
+        return order;
+    }
+
+    @Transactional
+    public Order changeOrder(Order chageOrder) {
+        Order order = repository.changeOrder(chageOrder);
+        // TODO 이벤트 발행 - 주문 요청 이벤트
+        return order;
+    }
+
+    @Transactional
+    public void deleteOrder(Long orderId) {
+        int affected = repository.deleteOrder(orderId);
+        if (affected == 0) {
+            throw new IllegalStateException("order delete fail");
+        }
+        // TODO 이벤트 발행 - 주문 취소 요청 이벤트
+    }
 }

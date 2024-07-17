@@ -29,7 +29,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     @Transactional
-    public Order orderProduct(Order order) {
+    public Order orderProducts(Order order) {
         OrderEntity orderEntity = OrderEntity.create(order);
         jpaRepository.save(orderEntity);
         return orderEntity.toDomain();
@@ -38,7 +38,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     @Transactional
     public Order changeOrder(Order order) {
-        return null;
+        OrderEntity orderEntity = jpaRepository.findByIdWithOrderProducts(order.getId())
+                .orElseThrow(() -> new OrderNotFoundException(order.getId()));
+
+        // TODO orderProducts 확인 후 수정, 삭제, 추가 구현
+
+        return orderEntity.toDomain();
     }
 
     @Override

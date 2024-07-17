@@ -54,7 +54,7 @@ class OrderRepositoryImplTest {
         ));
 
         // when
-        Order ordered = repository.orderProduct(order);
+        Order ordered = repository.orderProducts(order);
 
         // then
         assertThat(ordered).isNotNull();
