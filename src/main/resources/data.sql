@@ -1,7 +1,7 @@
 -- init order
 INSERT INTO ORDERS(order_id, status, total_price) VALUES (101, 'ORDER_REQUEST', 10000);
 INSERT INTO ORDERS(order_id, status, total_price) VALUES (102, 'ORDER_REQUEST', 20000);
-INSERT INTO ORDERS(order_id, status, total_price) VALUES (103, 'PAY_REQUEST', 15000);
+INSERT INTO ORDERS(order_id, status, total_price) VALUES (103, 'ORDER_COMPLETED', 15000);
 
 -- init order_product
 INSERT INTO ORDER_PRODUCT(order_product_id, order_id, product_id, quantity, unit_price) VALUES (101, 101, 101, 1, 5000);

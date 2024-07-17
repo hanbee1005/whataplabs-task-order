@@ -17,4 +17,8 @@ public class OrderProduct {
     private BigDecimal unitPrice;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
+
+    public BigDecimal getOrderPrice() {
+        return unitPrice.multiply(BigDecimal.valueOf(quantity));
+    }
 }

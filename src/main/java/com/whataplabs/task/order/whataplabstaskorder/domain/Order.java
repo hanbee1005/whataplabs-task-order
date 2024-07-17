@@ -18,4 +18,19 @@ public class Order {
     private LocalDateTime lastModifiedAt;
 
     private List<OrderProduct> orderProducts;
+
+    public static Order create(List<OrderProduct> orderProducts) {
+        return Order.builder()
+                .status(OrderStatus.ORDER_REQUEST)
+                .createdAt(LocalDateTime.now())
+                .totalPrice(calculateTotalPrice(orderProducts))
+                .orderProducts(orderProducts)
+                .build();
+    }
+
+    private static BigDecimal calculateTotalPrice(List<OrderProduct> orderProducts) {
+        return orderProducts.stream()
+                .map(OrderProduct::getOrderPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }
