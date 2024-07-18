@@ -2,6 +2,7 @@ package com.whataplabs.task.order.whataplabstaskorder.infrastructure.repository;
 
 import com.whataplabs.task.order.whataplabstaskorder.domain.Order;
 import com.whataplabs.task.order.whataplabstaskorder.domain.OrderRepository;
+import com.whataplabs.task.order.whataplabstaskorder.domain.OrderStatus;
 import com.whataplabs.task.order.whataplabstaskorder.domain.exception.OrderNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,9 +50,16 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     @Transactional
     public int deleteOrder(Long id) {
-        OrderEntity orderEntity = jpaRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException(id));
+        OrderEntity orderEntity = jpaRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
         orderEntity.requestCancel();
+        return 1;
+    }
+
+    @Override
+    @Transactional
+    public int updateOrderStatus(Long id, OrderStatus status) {
+        OrderEntity orderEntity = jpaRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+        orderEntity.updateStatus(status);
         return 1;
     }
 }

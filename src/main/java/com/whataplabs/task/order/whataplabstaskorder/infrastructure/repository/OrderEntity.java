@@ -58,6 +58,12 @@ public class OrderEntity {
 
     public void requestCancel() {
         changeStatus(OrderStatus.ORDER_CANCEL_REQUEST);
+        lastModifiedAt = LocalDateTime.now();
+    }
+
+    public void updateStatus(OrderStatus status) {
+        changeStatus(status);
+        lastModifiedAt = LocalDateTime.now();
     }
 
     public void changeStatus(OrderStatus status) {

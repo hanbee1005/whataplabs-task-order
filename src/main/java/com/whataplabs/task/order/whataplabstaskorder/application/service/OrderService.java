@@ -2,11 +2,12 @@ package com.whataplabs.task.order.whataplabstaskorder.application.service;
 
 import com.whataplabs.task.order.whataplabstaskorder.domain.Order;
 import com.whataplabs.task.order.whataplabstaskorder.domain.OrderRepository;
+import com.whataplabs.task.order.whataplabstaskorder.domain.OrderRequested;
+import com.whataplabs.task.order.whataplabstaskorder.domain.OrderStatus;
 import com.whataplabs.task.order.whataplabstaskorder.domain.exception.OrderNotFoundException;
-import com.whataplabs.task.order.whataplabstaskorder.interfaces.client.ProductClient;
-import com.whataplabs.task.order.whataplabstaskorder.interfaces.client.request.ProductOrderRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
     private final OrderRepository repository;
-    private final ProductClient productClient;
+
+    private final ApplicationEventPublisher publisher;
 
     @Transactional(readOnly = true)
     public Order getOrder(Long orderId) {
@@ -33,15 +35,7 @@ public class OrderService {
     @Transactional
     public Order orderProducts(Order newOrder) {
         Order order = repository.orderProducts(newOrder);
-
-        // TODO 이벤트 발행 - 주문 요청 이벤트
-        try {
-            productClient.checkStockAndDeduct(ProductOrderRequest.from(order));
-        } catch (Exception e) {
-            log.error("[OrderService.orderProducts] {}", e.getMessage());
-        }
-        // TODO 주문 상태 업데이트 필요
-
+        publisher.publishEvent(new OrderRequested(order));
         return order;
     }
 
@@ -59,5 +53,13 @@ public class OrderService {
             throw new IllegalStateException("order delete fail");
         }
         // TODO 이벤트 발행 - 주문 취소 요청 이벤트
+    }
+
+    @Transactional
+    public void updateOrderStatus(Long orderId, OrderStatus status) {
+        int affected = repository.updateOrderStatus(orderId, status);
+        if (affected == 0) {
+            throw new IllegalStateException("order status update fail. orderId=" + orderId + ", status=" + status);
+        }
     }
 }
