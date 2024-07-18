@@ -49,14 +49,6 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     @Transactional
-    public int deleteOrder(Long id) {
-        OrderEntity orderEntity = jpaRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
-        orderEntity.requestCancel();
-        return 1;
-    }
-
-    @Override
-    @Transactional
     public int updateOrderStatus(Long id, OrderStatus status) {
         OrderEntity orderEntity = jpaRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
         orderEntity.updateStatus(status);

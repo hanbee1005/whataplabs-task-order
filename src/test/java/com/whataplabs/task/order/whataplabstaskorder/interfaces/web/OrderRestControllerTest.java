@@ -18,10 +18,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.whataplabs.task.order.whataplabstaskorder.domain.OrderStatus.ORDER_CANCEL_REQUEST;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -110,14 +110,22 @@ class OrderRestControllerTest {
         public void deleteOrder() throws Exception {
             // given
             Long id = 102L;
-            willDoNothing().given(service).deleteOrder(anyLong());
+            Order product = Order.builder()
+                    .id(99L).status(ORDER_CANCEL_REQUEST).totalPrice(BigDecimal.valueOf(8000))
+                    .orderProducts(List.of(
+                            OrderProduct.builder().orderProductId(997L).orderId(996L).productId(101L).quantity(3).unitPrice(BigDecimal.valueOf(1000)).build(),
+                            OrderProduct.builder().orderProductId(998L).orderId(996L).productId(102L).quantity(2).unitPrice(BigDecimal.valueOf(1500)).build(),
+                            OrderProduct.builder().orderProductId(999L).orderId(996L).productId(103L).quantity(1).unitPrice(BigDecimal.valueOf(2000)).build()
+                    ))
+                    .build();
+            given(service.cancelOrder(any())).willReturn(product);
 
             // when
             // then
             mockMvc.perform(delete("/orders/102")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.data").value(id))
+                    .andExpect(jsonPath("$.data.status").value(ORDER_CANCEL_REQUEST.name()))
             ;
         }
 

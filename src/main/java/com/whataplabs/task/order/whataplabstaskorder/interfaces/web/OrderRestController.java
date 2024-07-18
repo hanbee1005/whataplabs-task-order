@@ -43,8 +43,7 @@ public class OrderRestController {
     }
 
     @DeleteMapping("/orders/{id}")
-    public ResponseEntity<CommonResponse<Object>> deleteOrder(@PathVariable Long id) {
-        service.deleteOrder(id);
-        return ResponseEntity.ok(CommonResponse.ok(id));
+    public ResponseEntity<CommonResponse<OrderProductsResponse>> deleteOrder(@PathVariable Long id) {
+        return ResponseEntity.ok(CommonResponse.ok(OrderProductsResponse.from(service.cancelOrder(id))));
     }
 }

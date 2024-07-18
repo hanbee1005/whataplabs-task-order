@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.whataplabs.task.order.whataplabstaskorder.domain.OrderStatus.ORDER_CANCEL_REQUEST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -64,19 +65,19 @@ class OrderRepositoryImplTest {
     }
 
     @Test
-    @DisplayName("주문 삭제")
+    @DisplayName("주문 취소를 요청하면 ORDER_CANCEL_REQUEST 상태로 변경됩니다.")
     public void deleteOrder() {
         // given
         Long orderId = 103L;
 
         // when
-        int affected = repository.deleteOrder(orderId);
+        int affected = repository.updateOrderStatus(orderId, ORDER_CANCEL_REQUEST);
         assertThat(affected).isEqualTo(1);
 
-        Order deleted = repository.getOrder(orderId).orElse(null);
+        Order cancelRequest = repository.getOrder(orderId).orElse(null);
 
         // then
-        assertThat(deleted).isNotNull();
-        assertThat(deleted.getStatus()).isEqualTo(OrderStatus.ORDER_CANCEL_REQUEST);
+        assertThat(cancelRequest).isNotNull();
+        assertThat(cancelRequest.getStatus()).isEqualTo(ORDER_CANCEL_REQUEST);
     }
 }

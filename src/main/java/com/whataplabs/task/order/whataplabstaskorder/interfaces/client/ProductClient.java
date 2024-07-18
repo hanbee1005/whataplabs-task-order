@@ -36,8 +36,16 @@ public class ProductClient {
     private final ObjectMapper objectMapper;
 
     public ProductOrderResponse checkStockAndDeduct(ProductOrderRequest request) {
-        String url = host + ":" + port + "/products/order";
+        String url = host + ":" + port + "/products/stock/deduct";
+        return checkStock(url, request);
+    }
 
+    public ProductOrderResponse checkStockAndRestock(ProductOrderRequest request) {
+        String url = host + ":" + port + "/products/stock/add";
+        return checkStock(url, request);
+    }
+
+    public ProductOrderResponse checkStock(String url, ProductOrderRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 

@@ -8,7 +8,6 @@ public interface OrderRepository {
     List<Order> getOrders();
     Order orderProducts(Order order);
     Order changeOrder(Order order);
-    int deleteOrder(Long id);
 
     int updateOrderStatus(Long id, OrderStatus status);
 }

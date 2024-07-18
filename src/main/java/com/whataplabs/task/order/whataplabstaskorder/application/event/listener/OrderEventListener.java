@@ -1,6 +1,7 @@
 package com.whataplabs.task.order.whataplabstaskorder.application.event.listener;
 
 import com.whataplabs.task.order.whataplabstaskorder.application.service.OrderService;
+import com.whataplabs.task.order.whataplabstaskorder.domain.OrderCancelRequested;
 import com.whataplabs.task.order.whataplabstaskorder.domain.OrderRequested;
 import com.whataplabs.task.order.whataplabstaskorder.domain.OrderStatus;
 import com.whataplabs.task.order.whataplabstaskorder.domain.exception.OrderFailException;
@@ -35,5 +36,21 @@ public class OrderEventListener {
         }
 
         log.info("[OrderEventListener.orderRequested] END order request. orderId={}", event.order().getId());
+    }
+
+    @Async
+    @EventListener
+    public void orderCancelRequested(OrderCancelRequested event) {
+        log.info("[OrderEventListener.orderCancelRequested] START order cancel request. orderId={}", event.order().getId());
+
+        try {
+            ProductOrderResponse productOrderResponse = productClient.checkStockAndRestock(ProductOrderRequest.from(event.order()));
+            log.info("stock check and restock succeed productIds{}", productOrderResponse.products());
+            orderService.updateOrderStatus(event.order().getId(), OrderStatus.ORDER_CANCELED);
+        } catch (OrderFailException e) {
+            log.error("[OrderService.orderCancelRequested] orderId={}, message={}", e.getOrderId(), e.getExternalErrorMessage());
+        }
+
+        log.info("[OrderEventListener.orderCancelRequested] END order cancel request. orderId={}", event.order().getId());
     }
 }
