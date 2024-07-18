@@ -38,8 +38,7 @@ public class OrderRestController {
     @PutMapping("/orders/{id}")
     public ResponseEntity<CommonResponse<Object>> changeOrder(@PathVariable Long id,
                                                               @RequestBody @Valid ChangeOrderRequest request) {
-        service.changeOrder(request.to());
-        return ResponseEntity.ok(CommonResponse.ok(id));
+        return ResponseEntity.ok(CommonResponse.ok(OrderProductsResponse.from(service.changeOrder(request.to(id)))));
     }
 
     @DeleteMapping("/orders/{id}")

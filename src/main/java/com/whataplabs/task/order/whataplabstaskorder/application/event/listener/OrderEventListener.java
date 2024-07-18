@@ -2,6 +2,7 @@ package com.whataplabs.task.order.whataplabstaskorder.application.event.listener
 
 import com.whataplabs.task.order.whataplabstaskorder.application.service.OrderService;
 import com.whataplabs.task.order.whataplabstaskorder.domain.OrderCancelRequested;
+import com.whataplabs.task.order.whataplabstaskorder.domain.OrderChangeRequested;
 import com.whataplabs.task.order.whataplabstaskorder.domain.OrderRequested;
 import com.whataplabs.task.order.whataplabstaskorder.domain.OrderStatus;
 import com.whataplabs.task.order.whataplabstaskorder.domain.exception.OrderFailException;
@@ -36,6 +37,23 @@ public class OrderEventListener {
         }
 
         log.info("[OrderEventListener.orderRequested] END order request. orderId={}", event.order().getId());
+    }
+
+    @Async
+    @EventListener
+    public void orderChangeRequested(OrderChangeRequested event) {
+        log.info("[OrderEventListener.orderChangeRequested] START order request. orderId={}", event.orderId());
+
+        try {
+            ProductOrderResponse productOrderResponse = productClient.checkStockAndDeduct(ProductOrderRequest.from(event.changeOrder()));
+            log.info("stock check and deduct succeed productIds{}", productOrderResponse.products());
+            orderService.updateOrder(event.orderId(), event.change());
+        } catch (OrderFailException e) {
+            log.error("[OrderService.orderChangeRequested] orderId={}, message={}", e.getOrderId(), e.getExternalErrorMessage());
+            orderService.updateOrderStatus(event.orderId(), event.originStatus());
+        }
+
+        log.info("[OrderEventListener.orderChangeRequested] END order request. orderId={}", event.orderId());
     }
 
     @Async

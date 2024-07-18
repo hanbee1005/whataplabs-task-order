@@ -21,4 +21,16 @@ public class OrderProduct {
     public BigDecimal getOrderPrice() {
         return unitPrice.multiply(BigDecimal.valueOf(quantity));
     }
+
+    public OrderProduct changeQuantity(int before) {
+        return OrderProduct.builder()
+                .orderProductId(orderProductId)
+                .orderId(orderId)
+                .productId(productId)
+                .quantity(quantity - before)
+                .unitPrice(unitPrice)
+                .createdAt(createdAt)
+                .lastModifiedAt(lastModifiedAt)
+                .build();
+    }
 }

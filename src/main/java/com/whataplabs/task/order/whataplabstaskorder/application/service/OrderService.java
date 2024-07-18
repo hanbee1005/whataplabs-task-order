@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.whataplabs.task.order.whataplabstaskorder.domain.OrderStatus.ORDER_CANCEL_REQUEST;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -36,16 +38,18 @@ public class OrderService {
         return order;
     }
 
-    @Transactional
-    public Order changeOrder(Order chageOrder) {
-        Order order = repository.changeOrder(chageOrder);
-        // TODO 이벤트 발행 - 주문 요청 이벤트
-        return order;
+    @Transactional(readOnly = true)
+    public Order changeOrder(Order changeOrder) {
+        Order originOrder = getOrder(changeOrder.getId());
+        originOrder.checkCanChange(changeOrder.getStatus());
+
+        publisher.publishEvent(OrderChangeRequested.of(originOrder, changeOrder));
+        return changeOrder;
     }
 
     @Transactional
     public Order cancelOrder(Long orderId) {
-        updateOrderStatus(orderId, OrderStatus.ORDER_CANCEL_REQUEST);
+        updateOrderStatus(orderId, ORDER_CANCEL_REQUEST);
 
         Order order = getOrder(orderId);
         publisher.publishEvent(new OrderCancelRequested(order));
@@ -58,5 +62,10 @@ public class OrderService {
         if (affected == 0) {
             throw new IllegalStateException("order status update fail. orderId=" + orderId + ", status=" + status);
         }
+    }
+
+    @Transactional
+    public void updateOrder(Long id, List<OrderProduct> change) {
+        // TODO 주문 상품을 하나씩 변경 필요
     }
 }
