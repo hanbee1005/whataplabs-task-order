@@ -58,6 +58,12 @@ public class OrderProductEntity {
         return productId.equals(other.getProductId());
     }
 
+    public void update(int quantity, BigDecimal unitPrice) {
+        updateQuantity(quantity);
+        updateUnitPrice(unitPrice);
+        lastModifiedAt = LocalDateTime.now();
+    }
+
     public void updateQuantity(int quantity) {
         if (quantity < 0) {
             log.error("[OrderProductEntity.updateQuantity] quantity invalid {}", unitPrice);

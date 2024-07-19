@@ -99,8 +99,7 @@ public class OrderEntity {
 
             if (exist.isPresent()) {
                 OrderProductEntity existingProduct = exist.get();
-                existingProduct.updateQuantity(updatedProduct.getQuantity());
-                existingProduct.updateUnitPrice(updatedProduct.getUnitPrice());
+                existingProduct.update(updatedProduct.getQuantity(), updatedProduct.getUnitPrice());
             } else {
                 addProduct(OrderProductEntity.create(updatedProduct));
             }
