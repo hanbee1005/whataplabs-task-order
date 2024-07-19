@@ -14,6 +14,6 @@ public class OrderChangeNotAvailableException extends OrderBusinessException {
 
     @Override
     public ErrorType getErrorType() {
-        return ErrorType.NOT_FOUND_ORDER;
+        return ErrorType.ORDER_CHANGE_NOT_AVAILABLE;
     }
 }

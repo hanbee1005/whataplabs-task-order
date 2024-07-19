@@ -47,10 +47,10 @@ public class Order {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void checkCanChange(OrderStatus status) {
-        boolean available = OrderStatus.changeAvailable(this.status, status);
+    public void checkCanChange(Order change) {
+        boolean available = OrderStatus.changeAvailable(status, change.status);
         if (!available) {
-            throw new OrderChangeNotAvailableException(this.status, status);
+            throw new OrderChangeNotAvailableException(status, change.status);
         }
     }
 }

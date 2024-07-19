@@ -3,10 +3,7 @@ package com.whataplabs.task.order.whataplabstaskorder.interfaces.web;
 import com.whataplabs.task.order.whataplabstaskorder.application.service.OrderService;
 import com.whataplabs.task.order.whataplabstaskorder.interfaces.web.request.ChangeOrderRequest;
 import com.whataplabs.task.order.whataplabstaskorder.interfaces.web.request.OrderProductsRequest;
-import com.whataplabs.task.order.whataplabstaskorder.interfaces.web.response.CommonResponse;
-import com.whataplabs.task.order.whataplabstaskorder.interfaces.web.response.GetOrderResponse;
-import com.whataplabs.task.order.whataplabstaskorder.interfaces.web.response.GetOrdersResponse;
-import com.whataplabs.task.order.whataplabstaskorder.interfaces.web.response.OrderProductsResponse;
+import com.whataplabs.task.order.whataplabstaskorder.interfaces.web.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -36,9 +33,9 @@ public class OrderRestController {
     }
 
     @PutMapping("/orders/{id}")
-    public ResponseEntity<CommonResponse<Object>> changeOrder(@PathVariable Long id,
-                                                              @RequestBody @Valid ChangeOrderRequest request) {
-        return ResponseEntity.ok(CommonResponse.ok(OrderProductsResponse.from(service.changeOrder(request.to(id)))));
+    public ResponseEntity<CommonResponse<ChangeOrderResponse>> changeOrder(@PathVariable Long id,
+                                                                           @RequestBody @Valid ChangeOrderRequest request) {
+        return ResponseEntity.ok(CommonResponse.ok(ChangeOrderResponse.from(service.changeOrder(request.to(id)))));
     }
 
     @DeleteMapping("/orders/{id}")

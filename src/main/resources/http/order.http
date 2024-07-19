@@ -28,6 +28,25 @@ content-type: application/json
   ]
 }
 
+### 주문 수정
+PUT http://localhost:9089/orders/102
+content-type: application/json
+
+{
+  "orderProduct": [
+    {
+      "productId": 103,
+      "quantity": 7,
+      "unitPrice": 1500
+    },
+    {
+      "productId": 105,
+      "quantity": 6,
+      "unitPrice": 2000
+    }
+  ]
+}
+
 ### 주문 삭제 (취소)
 DELETE http://localhost:9089/orders/103
 content-type: application/json

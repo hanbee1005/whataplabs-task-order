@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,34 +19,30 @@ public class OrderService {
 
     private final ApplicationEventPublisher publisher;
 
-    @Transactional(readOnly = true)
     public Order getOrder(Long orderId) {
         return repository.getOrder(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 
-    @Transactional(readOnly = true)
     public List<Order> getOrders() {
         return repository.getOrders();
     }
 
-    @Transactional
     public Order orderProducts(Order newOrder) {
         Order order = repository.orderProducts(newOrder);
         publisher.publishEvent(new OrderRequested(order));
         return order;
     }
 
-    @Transactional(readOnly = true)
     public Order changeOrder(Order changeOrder) {
         Order originOrder = getOrder(changeOrder.getId());
-        originOrder.checkCanChange(changeOrder.getStatus());
+        originOrder.checkCanChange(changeOrder);
+        updateOrderStatus(originOrder.getId(), changeOrder.getStatus());
 
         publisher.publishEvent(OrderChangeRequested.of(originOrder, changeOrder));
         return changeOrder;
     }
 
-    @Transactional
     public Order cancelOrder(Long orderId) {
         updateOrderStatus(orderId, ORDER_CANCEL_REQUEST);
 
@@ -56,7 +51,6 @@ public class OrderService {
         return order;
     }
 
-    @Transactional
     public void updateOrderStatus(Long orderId, OrderStatus status) {
         int affected = repository.updateOrderStatus(orderId, status);
         if (affected == 0) {
@@ -64,8 +58,13 @@ public class OrderService {
         }
     }
 
-    @Transactional
-    public void updateOrder(Long id, List<OrderProduct> change) {
-        // TODO 주문 상품을 하나씩 변경 필요
+    public void updateOrder(Long id, OrderStatus status, List<OrderProduct> change) {
+        Order order = repository.changeOrder(Order.builder()
+                .id(id)
+                .status(status)
+                .orderProducts(change)
+                .build());
+
+        log.info("[OrderService.updateOrder] order updated success. id={}", order.getId());
     }
 }

@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Entity
@@ -27,15 +28,19 @@ public class OrderEntity {
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderProductEntity> orderProducts = new ArrayList<>();
 
     public static OrderEntity create(Order order) {
         OrderEntity entity = new OrderEntity();
+
         entity.status = order.getStatus();
         entity.totalPrice = order.getTotalPrice();
         entity.createdAt = LocalDateTime.now();
-        order.getOrderProducts().forEach(entity::addProduct);
+        order.getOrderProducts().stream()
+                .map(OrderProductEntity::create)
+                .forEach(entity::addProduct);
+
         return entity;
     }
 
@@ -50,10 +55,14 @@ public class OrderEntity {
                 .build();
     }
 
-    public void addProduct(OrderProduct product) {
-        OrderProductEntity op = OrderProductEntity.create(product);
-        orderProducts.add(op);
-        op.setOrder(this);
+    public void addProduct(OrderProductEntity product) {
+        orderProducts.add(product);
+        product.setOrder(this);
+    }
+
+    public void removeProduct(OrderProductEntity product) {
+        orderProducts.remove(product);
+        product.setOrder(null);
     }
 
     public void cancel() {
@@ -72,5 +81,29 @@ public class OrderEntity {
         }
 
         this.status = status;
+    }
+
+    public void changeOrderProducts(List<OrderProduct> updatedProducts) {
+        // Remove items not in the updated list
+        List<Long> updatedProductIds = updatedProducts.stream().map(OrderProduct::getProductId).toList();
+        orderProducts.stream()
+                .filter(op -> !updatedProductIds.contains(op.getProductId()))
+                .toList()
+                .forEach(this::removeProduct);
+
+        // Update existing items or add new ones
+        for (OrderProduct updatedProduct : updatedProducts) {
+            Optional<OrderProductEntity> exist = orderProducts.stream()
+                    .filter(op -> op.isSameProduct(updatedProduct))
+                    .findFirst();
+
+            if (exist.isPresent()) {
+                OrderProductEntity existingProduct = exist.get();
+                existingProduct.updateQuantity(updatedProduct.getQuantity());
+                existingProduct.updateUnitPrice(updatedProduct.getUnitPrice());
+            } else {
+                addProduct(OrderProductEntity.create(updatedProduct));
+            }
+        }
     }
 }

@@ -19,11 +19,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     private final OrderJpaRepository jpaRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Order> getOrder(Long orderId) {
         return jpaRepository.findByIdWithOrderProducts(orderId).map(OrderEntity::toDomain);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Order> getOrders() {
         return jpaRepository.findAllWithOrderProducts().stream().map(OrderEntity::toDomain).toList();
     }
@@ -42,8 +44,10 @@ public class OrderRepositoryImpl implements OrderRepository {
         OrderEntity orderEntity = jpaRepository.findByIdWithOrderProducts(order.getId())
                 .orElseThrow(() -> new OrderNotFoundException(order.getId()));
 
-        // TODO orderProducts 확인 후 수정, 삭제, 추가 구현
+        orderEntity.updateStatus(order.getStatus());
+        orderEntity.changeOrderProducts(order.getOrderProducts());
 
+        jpaRepository.save(orderEntity);
         return orderEntity.toDomain();
     }
 
