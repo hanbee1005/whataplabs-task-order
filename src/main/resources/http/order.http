@@ -48,6 +48,6 @@ content-type: application/json
 }
 
 ### 주문 삭제 (취소)
-DELETE http://localhost:9089/orders/103
+DELETE http://localhost:9089/orders/102
 content-type: application/json
 
