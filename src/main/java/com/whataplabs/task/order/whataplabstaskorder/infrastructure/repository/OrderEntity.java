@@ -3,6 +3,7 @@ package com.whataplabs.task.order.whataplabstaskorder.infrastructure.repository;
 import com.whataplabs.task.order.whataplabstaskorder.domain.Order;
 import com.whataplabs.task.order.whataplabstaskorder.domain.OrderProduct;
 import com.whataplabs.task.order.whataplabstaskorder.domain.OrderStatus;
+import com.whataplabs.task.order.whataplabstaskorder.domain.exception.OrderChangeNotAvailableException;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -77,7 +78,7 @@ public class OrderEntity {
 
     public void changeStatus(OrderStatus status) {
         if (!OrderStatus.changeAvailable(this.status, status)) {
-            throw new IllegalArgumentException("해당 상태로 변경이 불가합니다. before=" + this.status + ", after=" + status);
+            throw new OrderChangeNotAvailableException(this.status, status);
         }
 
         this.status = status;

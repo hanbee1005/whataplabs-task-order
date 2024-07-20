@@ -1,5 +1,6 @@
 # Whataplabs Task - ORDER
 주문 API를 제공하는 애플리케이션입니다. ```PORT: 9089```
+- [API 문서](http://localhost:9089/swagger-ui/index.html)
 
 ## 사용 기술
 - Java 17
@@ -15,7 +16,7 @@
 - 주문 상태는 ```주문 요청(ORDER_REQUEST)```, ```결제 요청(PAY_REQUEST)```, ```주문 취소 요청(ORDER_CANCEL_REQUEST)```, ```주문 취소(ORDER_CANCELED)``` 로 구분합니다.
   + ```주문 요청(ORDER_REQUEST)```: 최초 주문 요청 상태 (재고 확인 x)
   + ```주문 완료(ORDER_COMPLETED)```: 재고 확인이 완료되어 실제 주문이 완료되었다고 보는 상태
-  + ```주문 실패(ORDER_FAIL)```: 재고가 부족하거나 상품이 없는 등의 이유로 주문이 실패한 상태
+  + ```주문 실패(ORDER_FAILED)```: 재고가 부족하거나 상품이 없는 등의 이유로 주문이 실패한 상태
   + ```주문 취소 요청(ORDER_CANCEL_REQUEST)```: 요청 또는 결제 요청 상태에서 주문 취소를 요청했을 때 상태 (재고 원복 전)
   + ```주문 취소(ORDER_CANCELED)```: 재고 원복이 완료된 후 주문 취소 완료 상태
 - 제외된 내용
