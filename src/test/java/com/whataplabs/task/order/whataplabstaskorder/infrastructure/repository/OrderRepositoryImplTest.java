@@ -68,7 +68,7 @@ class OrderRepositoryImplTest {
     @DisplayName("주문 취소를 요청하면 ORDER_CANCEL_REQUEST 상태로 변경됩니다.")
     public void deleteOrder() {
         // given
-        Long orderId = 103L;
+        Long orderId = 102L;
 
         // when
         int affected = repository.updateOrderStatus(orderId, ORDER_CANCEL_REQUEST);
