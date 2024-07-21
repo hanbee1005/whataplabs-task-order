@@ -22,7 +22,7 @@ public enum OrderStatus {
         return switch (after) {
             case ORDER_REQUEST -> List.of(ORDER_COMPLETED, ORDER_FAILED).contains(before);
             case ORDER_COMPLETED, ORDER_FAILED -> before == ORDER_REQUEST;
-            case ORDER_CANCEL_REQUEST -> List.of(ORDER_REQUEST, ORDER_COMPLETED).contains(before);
+            case ORDER_CANCEL_REQUEST -> before == ORDER_COMPLETED;
             case ORDER_CANCELED -> before == ORDER_CANCEL_REQUEST;
         };
     }
