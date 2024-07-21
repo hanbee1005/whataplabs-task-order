@@ -1,7 +1,10 @@
 package com.whataplabs.task.order.whataplabstaskorder.domain;
 
 import com.whataplabs.task.order.whataplabstaskorder.domain.exception.OrderChangeNotAvailableException;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,9 +13,7 @@ import java.util.List;
 import static com.whataplabs.task.order.whataplabstaskorder.domain.OrderStatus.ORDER_REQUEST;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Order {
     private Long id;
     private OrderStatus status;
@@ -21,6 +22,16 @@ public class Order {
     private LocalDateTime lastModifiedAt;
 
     private List<OrderProduct> orderProducts;
+
+    @Builder
+    public Order(Long id, OrderStatus status, BigDecimal totalPrice, LocalDateTime createdAt, LocalDateTime lastModifiedAt, List<OrderProduct> orderProducts) {
+        this.id = id;
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.createdAt = createdAt;
+        this.lastModifiedAt = lastModifiedAt;
+        this.orderProducts = orderProducts;
+    }
 
     public static Order create(List<OrderProduct> orderProducts) {
         return Order.builder()
