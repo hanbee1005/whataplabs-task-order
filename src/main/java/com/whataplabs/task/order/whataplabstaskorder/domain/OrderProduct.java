@@ -1,5 +1,6 @@
 package com.whataplabs.task.order.whataplabstaskorder.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,6 +31,7 @@ public class OrderProduct {
         this.lastModifiedAt = lastModifiedAt;
     }
 
+    @JsonIgnore
     public BigDecimal getOrderPrice() {
         return unitPrice.multiply(BigDecimal.valueOf(quantity));
     }

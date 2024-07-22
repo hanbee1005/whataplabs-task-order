@@ -1,6 +1,8 @@
 package com.whataplabs.task.order.whataplabstaskorder.domain;
 
 import com.whataplabs.task.order.whataplabstaskorder.application.event.common.DomainEvent;
+import com.whataplabs.task.order.whataplabstaskorder.application.event.common.EventType;
+import com.whataplabs.task.order.whataplabstaskorder.infrastructure.util.JsonUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,5 +26,20 @@ public record OrderChangeRequested(
                     .ifPresentOrElse(o -> products.add(c.changeQuantity(o.getQuantity())), () -> products.add(c));
         }
         return Order.builder().id(orderId).orderProducts(products).build();
+    }
+
+    @Override
+    public EventType getEventType() {
+        return EventType.ORDER_CHANGE_REQUESTED;
+    }
+
+    @Override
+    public String getPayload() {
+        return "{" +
+                "\"orderId\":" + "\"" + orderId + "\"," +
+                "\"originStatus\":" + "\"" + originStatus + "\"," +
+                "\"origin\":" + JsonUtil.toJson(origin) + "," +
+                "\"change\":" + JsonUtil.toJson(change) +
+                "}";
     }
 }
