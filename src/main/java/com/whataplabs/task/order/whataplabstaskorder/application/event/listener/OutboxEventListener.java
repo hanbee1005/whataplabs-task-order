@@ -11,9 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +26,7 @@ public class OutboxEventListener {
     private final ApplicationEventPublisher publisher;
 
     @Async
-    @EventListener({ApplicationReadyEvent.class, OutboxCreated.class})
+    @TransactionalEventListener(value = {ApplicationReadyEvent.class, OutboxCreated.class}, phase = TransactionPhase.AFTER_COMMIT)
     public void deliveryOutboxEvents() {
         log.debug("[deliveryOutboxEvents] START {}", LocalDateTime.now());
         while (true) {
