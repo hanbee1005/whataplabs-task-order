@@ -2,10 +2,11 @@ package com.whataplabs.task.order.whataplabstaskorder.application.service;
 
 import com.whataplabs.task.order.whataplabstaskorder.domain.*;
 import com.whataplabs.task.order.whataplabstaskorder.domain.exception.OrderNotFoundException;
+import com.whataplabs.task.order.whataplabstaskorder.domain.outbox.DomainEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ import static com.whataplabs.task.order.whataplabstaskorder.domain.OrderStatus.O
 public class OrderService {
     private final OrderRepository repository;
 
-    private final ApplicationEventPublisher publisher;
+    private final DomainEventPublisher publisher;
 
     public Order getOrder(Long orderId) {
         return repository.getOrder(orderId)
@@ -28,26 +29,29 @@ public class OrderService {
         return repository.getOrders();
     }
 
+    @Transactional
     public Order orderProducts(Order newOrder) {
         Order order = repository.orderProducts(newOrder);
-        publisher.publishEvent(new OrderRequested(order));
+        publisher.publish(new OrderRequested(order));
         return order;
     }
 
+    @Transactional
     public Order changeOrder(Order changeOrder) {
         Order originOrder = getOrder(changeOrder.getId());
         originOrder.checkCanChange(changeOrder);
         updateOrderStatus(originOrder.getId(), changeOrder.getStatus());
 
-        publisher.publishEvent(OrderChangeRequested.of(originOrder, changeOrder));
+        publisher.publish(OrderChangeRequested.of(originOrder, changeOrder));
         return changeOrder;
     }
 
+    @Transactional
     public Order cancelOrder(Long orderId) {
         updateOrderStatus(orderId, ORDER_CANCEL_REQUEST);
 
         Order order = getOrder(orderId);
-        publisher.publishEvent(new OrderCancelRequested(order));
+        publisher.publish(new OrderCancelRequested(order));
         return order;
     }
 
