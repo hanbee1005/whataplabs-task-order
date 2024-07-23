@@ -6,7 +6,6 @@ import com.whataplabs.task.order.whataplabstaskorder.domain.outbox.DomainEventPu
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,7 +34,6 @@ public class OrderService {
         return order;
     }
 
-    @Transactional
     public Order changeOrder(Order changeOrder) {
         Order originOrder = getOrder(changeOrder.getId());
         originOrder.checkCanChange(changeOrder);
@@ -45,7 +43,6 @@ public class OrderService {
         return changeOrder;
     }
 
-    @Transactional
     public Order cancelOrder(Long orderId) {
         updateOrderStatus(orderId, ORDER_CANCEL_REQUEST);
 

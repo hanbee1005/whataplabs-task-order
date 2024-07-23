@@ -18,6 +18,8 @@ public class DomainEventPublisher {
 
     @Transactional
     public void publish(DomainEvent event) {
+        log.info("[DomainEventPublisher.publish] event occurred. event={}, payload={}", event.getEventType(), event.getPayload());
+
         Outbox outbox = Outbox.builder()
                 .eventType(event.getEventType())
                 .payload(event.getPayload())
